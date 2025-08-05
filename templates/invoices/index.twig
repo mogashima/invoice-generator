@@ -1,0 +1,39 @@
+{% extends 'layout.twig' %}
+
+{% block content %}
+    <h2>請求書一覧</h2>
+    <div class="table-wrapper">
+        {% if invoices|length > 0 %}
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>請求日</th>
+                        <th>支払期限</th>
+                        <th>顧客名</th>
+                        <th>合計金額</th>
+                        <th>ステータス</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in invoices %}
+                        <tr>
+                            <td>{{ invoice.id }}</td>
+                            <td>{{ invoice.invoice_date }}</td>
+                            <td>{{ invoice.due_date }}</td>
+                            <td>{{ invoice.company_name }}</td>
+                            <td>{{ invoice.total_amount | number_format(0, '.', ',') }} 円</td>
+                            <td>{{ invoice.status }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>請求書データがありません。</p>
+        {% endif %}
+        <div class="btn-container">
+            <a href="/invoices/create" class="btn btn-create">新規作成</a>
+        </div>
+    </div>
+{% endblock %}

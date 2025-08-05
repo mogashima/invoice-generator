@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}請求書サンプル{% endblock %}</title>
+        <link rel="stylesheet" href="/css/style.css">
+    </head>
+    <body>
+        <header>
+            <nav class="navbar">
+                <div class="nav-container">
+                    <a href="/" class="nav-logo">請求書サンプル</a>
+                    <ul class="nav-links">
+                        <li><a href="/customers">顧客一覧</a></li>
+                        <li><a href="/invoices">請求書一覧</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+
+    </body>
+</html>
