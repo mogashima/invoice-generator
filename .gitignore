@@ -6,3 +6,6 @@
 !/logs/README.md
 .phpunit.result.cache
 /nbproject/
+
+.env
+/db/db.sqlite

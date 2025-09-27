@@ -42,6 +42,8 @@ $container = $containerBuilder->build();
 // Instantiate the app
 AppFactory::setContainer($container);
 $app = AppFactory::create();
+$basePath = $_ENV['BASE_PATH'] ?? '';
+$app->setBasePath($basePath);
 $callableResolver = $app->getCallableResolver();
 
 // Register middleware
