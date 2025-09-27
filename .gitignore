@@ -8,4 +8,4 @@
 /nbproject/
 
 .env
-/db/db.sqlite
+/db/sqlite

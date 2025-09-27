@@ -52,7 +52,8 @@ return function (ContainerBuilder $containerBuilder) {
             switch ($driver) {
                 case 'sqlite':
                     // SQLite の場合は DB_NAME にファイルパスを入れる想定
-                    $dbPath = $_ENV['DB_NAME'] ?? __DIR__ . '/../db/db.sqlite';
+                    $dbName = $_ENV['DB_NAME'] ?? 'invoice';
+                    $dbPath = __DIR__ . '/../db/sqlite/' . $dbName . '.sqlite3';
                     $dsn    = "sqlite:" . $dbPath;
                     return new PDO($dsn, null, null, $options);
 

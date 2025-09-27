@@ -4,7 +4,7 @@
     <div class="title-container">
         <h2>請求書作成</h2>
     </div>
-    <form action="/invoices" method="post" class="form-container">
+    <form action="{{ basePath }}/invoices" method="post" class="form-container">
         <div class="form-group">
             <label for="customer" class="customer-label">顧客</label>
             <span id="customer-name"></span>
@@ -29,7 +29,7 @@
         </div>
 
         <div class="button-group">
-            <a href="/invoices" class="btn btn-cancel">戻る</a>
+            <a href="{{ basePath }}/invoices" class="btn btn-cancel">戻る</a>
             <button type="submit" class="btn btn-create">保存</button>
         </div>
     </form>
