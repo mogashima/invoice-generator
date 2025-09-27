@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}請求書サンプル{% endblock %}</title>
-        <link rel="stylesheet" href="{{ basePath }}/css/style.css">
+        <link rel="stylesheet" href="{{url('css/style.css')}}">
     </head>
     <body>
         <header>
@@ -11,8 +11,8 @@
                 <div class="nav-container">
                     <a href="/" class="nav-logo">請求書サンプル</a>
                     <ul class="nav-links">
-                        <li><a href="{{ basePath }}/customers">顧客一覧</a></li>
-                        <li><a href="{{ basePath }}/invoices">請求書一覧</a></li>
+                        <li><a href="{{ url('customers')}}">顧客一覧</a></li>
+                        <li><a href="{{ url('invoices')}}">請求書一覧</a></li>
                     </ul>
                 </div>
             </nav>

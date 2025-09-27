@@ -4,7 +4,7 @@
     <div class="title-container">
         <h2>顧客登録</h2>
     </div>
-    <form action="{{ basePath }}/customers" method="post" class="form-container">
+    <form action="{{url('customers')}}" method="post" class="form-container">
         <div class="form-group">
             <label for="company_name">会社名</label>
             <input type="text" name="company_name" id="company_name" required>
@@ -26,7 +26,7 @@
             <input type="text" name="phone" id="phone">
         </div>
         <div class="button-group">
-            <a href="{{ basePath }}/customers" class="btn btn-cancel">戻る</a>
+            <a href="{{url('customers')}}" class="btn btn-cancel">戻る</a>
             <button type="submit" class="btn btn-create">保存</button>
         </div>
 

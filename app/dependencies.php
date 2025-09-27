@@ -16,6 +16,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Views\Twig;
 use Twig\Loader\FilesystemLoader;
+use Twig\TwigFunction;
 
 return function (ContainerBuilder $containerBuilder) {
 
@@ -110,13 +111,14 @@ return function (ContainerBuilder $containerBuilder) {
     // ビューでbasePathを利用する
     $containerBuilder->addDefinitions([
         Twig::class => function () {
-            $twig = \Slim\Views\Twig::create(__DIR__ . '/../templates', ['cache' => false]);
+            $twig = Twig::create(__DIR__ . '/../templates', ['cache' => false]);
 
-            // .env から BASE_PATH を取得
-            $basePath = $_ENV['BASE_PATH'] ?? '';
-
-            // Twig グローバル変数としてセット
-            $twig->getEnvironment()->addGlobal('basePath', $basePath);
+            // メソッド風に使えるクロージャ
+            $twig->getEnvironment()->addFunction(
+                new TwigFunction('url', function ($path = '') {
+                    return $_ENV['BASE_PATH'] ? $_ENV['BASE_PATH'] . '/' . $path : $path;
+                })
+            );
 
             return $twig;
         },
