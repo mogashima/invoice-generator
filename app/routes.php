@@ -17,6 +17,7 @@ return function (App $app) {
     $app->get('/invoices', [InvoiceController::class, 'index']);
     $app->get('/invoices/create', [InvoiceController::class, 'create']);
     $app->post('/invoices', [InvoiceController::class, 'store']);
+    $app->get('/invoices/pdf', [InvoiceController::class, 'exportPdf']);
 
     $app->get('/customers', [CustomerController::class, 'index']);
     $app->get('/customers/create', [CustomerController::class, 'create']);

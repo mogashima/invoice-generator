@@ -1,10 +1,11 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 use Phinx\Migration\AbstractMigration;
 
-final class CreateCustomersTable extends AbstractMigration {
+final class CreateCustomersTable extends AbstractMigration
+{
 
     /**
      * Change Method.
@@ -17,14 +18,15 @@ final class CreateCustomersTable extends AbstractMigration {
      * Remember to call "create()" or "update()" and NOT "save()" when working
      * with the Table class.
      */
-    public function change(): void {
+    public function change(): void
+    {
         $table = $this->table('customers');
-        $table->addColumn('company_name', 'string', ['limit' => 255])
-                ->addColumn('contact_name', 'string', ['limit' => 100, 'null' => true])
-                ->addColumn('email', 'string', ['limit' => 255, 'null' => true])
-                ->addColumn('phone', 'string', ['limit' => 50, 'null' => true])
-                ->addColumn('address', 'text', ['null' => true])
-                ->addTimestamps() // created_at と updated_at を追加
-                ->create();
+        $table->addColumn('company_name', 'string', ['limit' => 100])
+            ->addColumn('contact_name', 'string', ['limit' => 100, 'null' => true])
+            ->addColumn('email', 'string', ['limit' => 100, 'null' => true])
+            ->addColumn('phone', 'string', ['limit' => 100, 'null' => true])
+            ->addColumn('address', 'text', ['limit' => 100, 'null' => true])
+            ->addTimestamps() // created_at と updated_at を追加
+            ->create();
     }
 }

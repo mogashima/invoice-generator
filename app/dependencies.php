@@ -8,6 +8,7 @@ use App\Controllers\CustomerController;
 use App\Controllers\InvoiceController;
 use App\Repositories\CustomerRepository;
 use App\Repositories\InvoiceRepository;
+use App\Support\FlashSession;
 use DI\ContainerBuilder;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -76,8 +77,9 @@ return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         InvoiceController::class     => function (ContainerInterface $c) {
             $twig       = $c->get(Twig::class);
-            $repository = $c->get(InvoiceRepository::class);
-            return new InvoiceController($twig, $repository);
+            $invoice = $c->get(InvoiceRepository::class);
+            $customer = $c->get(CustomerRepository::class);
+            return new InvoiceController($twig, $invoice, $customer);
         },
         CustomerController::class    => function (ContainerInterface $c) {
             $twig       = $c->get(Twig::class);
@@ -112,6 +114,11 @@ return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         Twig::class => function () {
             $twig = Twig::create(__DIR__ . '/../templates', ['cache' => false]);
+
+            // セッション変数を Twig に渡す
+            $twig->getEnvironment()->addGlobal('errors', FlashSession::get('errors', []));
+            $twig->getEnvironment()->addGlobal('old', FlashSession::get('old', []));
+            $twig->getEnvironment()->addGlobal('successMessage', FlashSession::get('successMessage', ''));
 
             // メソッド風に使えるクロージャ
             $twig->getEnvironment()->addFunction(

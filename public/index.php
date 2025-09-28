@@ -1,15 +1,15 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 use App\Application\Handlers\HttpErrorHandler;
 use App\Application\Handlers\ShutdownHandler;
 use App\Application\ResponseEmitter\ResponseEmitter;
 use App\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
+use Dotenv\Dotenv;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
-use Dotenv\Dotenv;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -17,11 +17,16 @@ require __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
+// Session Start
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Instantiate PHP-DI ContainerBuilder
 $containerBuilder = new ContainerBuilder();
 
 if (false) { // Should be set to true in production
-	$containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
+    $containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
 }
 
 // Set up settings
@@ -41,7 +46,7 @@ $container = $containerBuilder->build();
 
 // Instantiate the app
 AppFactory::setContainer($container);
-$app = AppFactory::create();
+$app      = AppFactory::create();
 $basePath = $_ENV['BASE_PATH'] ?? '';
 $app->setBasePath($basePath);
 $callableResolver = $app->getCallableResolver();
@@ -58,16 +63,16 @@ $routes($app);
 $settings = $container->get(SettingsInterface::class);
 
 $displayErrorDetails = $settings->get('displayErrorDetails');
-$logError = $settings->get('logError');
-$logErrorDetails = $settings->get('logErrorDetails');
+$logError            = $settings->get('logError');
+$logErrorDetails     = $settings->get('logErrorDetails');
 
 // Create Request object from globals
 $serverRequestCreator = ServerRequestCreatorFactory::create();
-$request = $serverRequestCreator->createServerRequestFromGlobals();
+$request              = $serverRequestCreator->createServerRequestFromGlobals();
 
 // Create Error Handler
 $responseFactory = $app->getResponseFactory();
-$errorHandler = new HttpErrorHandler($callableResolver, $responseFactory);
+$errorHandler    = new HttpErrorHandler($callableResolver, $responseFactory);
 
 // Create Shutdown Handler
 $shutdownHandler = new ShutdownHandler($request, $errorHandler, $displayErrorDetails);
@@ -84,6 +89,6 @@ $errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, $logError, $lo
 $errorMiddleware->setDefaultErrorHandler($errorHandler);
 
 // Run App & Emit Response
-$response = $app->handle($request);
+$response        = $app->handle($request);
 $responseEmitter = new ResponseEmitter();
 $responseEmitter->emit($response);

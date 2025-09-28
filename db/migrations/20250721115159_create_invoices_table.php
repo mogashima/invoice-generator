@@ -1,10 +1,11 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 use Phinx\Migration\AbstractMigration;
 
-final class CreateInvoicesTable extends AbstractMigration {
+final class CreateInvoicesTable extends AbstractMigration
+{
 
     /**
      * Change Method.
@@ -17,14 +18,16 @@ final class CreateInvoicesTable extends AbstractMigration {
      * Remember to call "create()" or "update()" and NOT "save()" when working
      * with the Table class.
      */
-    public function change(): void {
+    public function change(): void
+    {
         $table = $this->table('invoices');
-        $table->addColumn('customer_id', 'integer') // 顧客ID（外部キー想定）
-                ->addColumn('invoice_date', 'date')   // 請求日
-                ->addColumn('due_date', 'date')       // 支払期限
-                ->addColumn('total_amount', 'decimal', ['precision' => 10, 'scale' => 2]) // 合計金額
-                ->addColumn('status', 'integer', ['default' => 0, 'signed' => false]) // 0〜7を想定
-                ->addTimestamps() // created_at, updated_at
-                ->create();
+        $table->addColumn('customer_id', 'integer') // 顧客ID（外部キー）
+            ->addColumn('title', 'string', ['limit' => 100])
+            ->addColumn('invoice_date', 'date')
+            ->addColumn('amount', 'decimal', ['precision' => 10, 'scale' => 2])
+            ->addColumn('status', 'integer', ['default' => 0, 'signed' => false])
+            ->addColumn('note', 'string', ['limit' => 255])
+            ->addTimestamps() // created_at, updated_at
+            ->create();
     }
 }

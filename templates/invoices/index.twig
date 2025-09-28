@@ -1,39 +1,169 @@
 {% extends 'layout.twig' %}
 
 {% block content %}
-    <h2>請求書一覧</h2>
-    <div class="table-wrapper">
-        {% if invoices|length > 0 %}
+	<h2>請求書一覧</h2>
+	{% include 'parts/successMessage.twig' %}
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>請求日</th>
-                        <th>支払期限</th>
-                        <th>顧客名</th>
-                        <th>合計金額</th>
-                        <th>ステータス</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for invoice in invoices %}
-                        <tr>
-                            <td>{{ invoice.id }}</td>
-                            <td>{{ invoice.invoice_date }}</td>
-                            <td>{{ invoice.due_date }}</td>
-                            <td>{{ invoice.company_name }}</td>
-                            <td>{{ invoice.total_amount | number_format(0, '.', ',') }} 円</td>
-                            <td>{{ invoice.status }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>請求書データがありません。</p>
-        {% endif %}
-        <div class="btn-container">
-            <a href="{{ url('invoices/create')}}" class="btn btn-create">新規作成</a>
-        </div>
-    </div>
+	<!-- 検索フォーム -->
+	<form action="{{ url('invoices') }}" method="get" class="search-form">
+		<div class="form-group">
+			<label for="customer_name">顧客</label>
+			<span id="customer_name_label">{{ searchParams.customer_name }}</span>
+			<input type="hidden" id="customer_name" name="customer_name" value="{{ searchParams.customer_name }}">
+			<input type="hidden" id="customer_id" name="customer_id" value="{{ searchParams.customer_id }}">
+			<button type="button" class="btn customer-button" id="openModal">顧客選択</button>
+		</div>
+
+		<div class="form-group">
+			<label for="from_date">請求日（開始）</label>
+			<input type="date" id="from_date" name="from_date" value="{{ searchParams.from_date }}">
+		</div>
+
+		<div class="form-group">
+			<label for="to_date">請求日（終了）</label>
+			<input type="date" id="to_date" name="to_date" value="{{ searchParams.to_date }}">
+		</div>
+
+		<button type="submit" class="btn btn-search">検索</button>
+		<a href="{{ url('invoices/pdf') ~ '?' ~ 'customer_id=' ~ (searchParams.customer_id|default('')) ~ '&from_date=' ~ (searchParams.from_date|default('')) ~ '&to_date=' ~ (searchParams.to_date|default('')) }}" class="btn btn-pdf">PDF出力</a>
+	</form>
+
+	<!-- 一覧 -->
+	<div class="table-wrapper">
+		{% if invoices|length > 0 %}
+
+			<table>
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>請求日</th>
+						<th>タイトル</th>
+						<th>顧客名</th>
+						<th>金額</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for invoice in invoices %}
+						<tr>
+							<td>{{ invoice.id }}</td>
+							<td>{{ invoice.invoice_date }}</td>
+							<td>{{ invoice.title }}</td>
+							<td>{{ invoice.company_name }}</td>
+							<td>{{ invoice.amount | number_format(0, '.', ',') }}
+								円</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		{% else %}
+			<p>請求書データがありません。</p>
+		{% endif %}
+		<div class="btn-container">
+			<a href="{{ url('invoices/create')}}" class="btn btn-create">新規作成</a>
+		</div>
+	</div>
+
+
+	<!-- モーダル本体 -->
+	<div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true">
+		<div class="modal-content">
+			<button id="closeModal" class="modal-close" aria-label="モーダルを閉じる">&times;</button>
+			<h3>顧客情報検索</h3>
+
+			<div class="search-box">
+				<input type="text" id="customer-search-input" placeholder="顧客名または会社名を入力">
+				<button id="searchCustomerBtn">検索</button>
+			</div>
+
+			<div
+				id="customer-results" class="customer-results"><!-- 顧客情報がここに表示されます -->
+			</div>
+		</div>
+	</div>
+
+	 <script>
+								        // モーダル処理
+								        document.addEventListener('DOMContentLoaded', () => {
+								            const modal = document.getElementById('modal');
+								            const openBtn = document.getElementById('openModal');
+								            const closeBtn = document.getElementById('closeModal');
+								            const searchBtn = document.getElementById('searchCustomerBtn');
+								            const resultBox = document.getElementById('customer-results');
+								            const searchInput = document.getElementById('customer-search-input');
+								
+								            function openModal() {
+								                modal.classList.remove('hidden');
+								                modal.setAttribute('aria-hidden', 'false');
+								                searchInput.focus();
+								                document.body.style.overflow = 'hidden';
+								            }
+								
+								            function closeModal() {
+								                modal.classList.add('hidden');
+								                modal.setAttribute('aria-hidden', 'true');
+								                openBtn.focus();
+								                document.body.style.overflow = '';
+								            }
+								
+								            openBtn.addEventListener('click', openModal);
+								            closeBtn.addEventListener('click', closeModal);
+								            modal.addEventListener('click', (e) => {
+								                if (e.target === modal)
+								                    closeModal();
+								            });
+								
+								            document.addEventListener('keydown', (e) => {
+								                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+								                    closeModal();
+								                }
+								            });
+								
+								            // 検索ボタン押下時の処理
+								            searchBtn.addEventListener('click', async () => {
+								                const keyword = searchInput.value.trim();
+								                if (!keyword) {
+								                    resultBox.innerHTML = '<p>検索ワードを入力してください。</p>';
+								                    return;
+								                }
+								
+								                try {
+								                    const response = await fetch("{{url('api/customers/search')}}" + `?keyword=${encodeURIComponent(keyword)}`);
+								                    if (!response.ok)
+								                        throw new Error('Network error');
+								
+								                    const customers = await response.json();
+								
+								                    if (customers.length === 0) {
+								                        resultBox.innerHTML = '<p>該当する顧客が見つかりませんでした。</p>';
+								                    } else {
+								                        resultBox.innerHTML = customers.map(c =>
+								                                `<div class="customer-item" data-id="${c.id}" data-name="${c.contact_name}(${c.company_name})">${c.contact_name}（${c.company_name}）</div>`
+								                        ).join('');
+								                    }
+								
+								                } catch (error) {
+								                    console.error('Fetch failed', error);
+								                    resultBox.innerHTML = '<p>エラーが発生しました。</p>';
+								                }
+								            });
+								            // 顧客を選択したときの処理
+								            resultBox.addEventListener('click', (event) => {
+								                const item = event.target.closest('.customer-item');
+								                if (!item)
+								                    return;
+								
+								                const customerId = item.dataset.id;
+								                const customerName = item.dataset.name;
+								
+								                // hidden項目と表示を更新
+								                document.getElementById('customer_id').value = customerId;
+					                            document.getElementById('customer_name').value = customerName;
+								                document.getElementById('customer_name_label').textContent = customerName;
+								
+								                // モーダルを閉じる
+								                closeModal();
+								            });
+								        });
+								    </script>
+
 {% endblock %}

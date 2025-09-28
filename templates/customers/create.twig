@@ -1,34 +1,35 @@
 {% extends 'layout.twig' %}
 
 {% block content %}
-    <div class="title-container">
-        <h2>顧客登録</h2>
-    </div>
-    <form action="{{url('customers')}}" method="post" class="form-container">
-        <div class="form-group">
-            <label for="company_name">会社名</label>
-            <input type="text" name="company_name" id="company_name" required>
-        </div>
-        <div class="form-group">
-            <label for="contact_name">担当者名</label>
-            <input type="text" name="contact_name" id="contact_name" required>
-        </div>
-        <div class="form-group">
-            <label for="email">メールアドレス</label>
-            <input type="email" name="email" id="email" required>
-        </div>
-        <div class="form-group">
-            <label for="address">住所</label>
-            <input type="text" name="address" id="address">
-        </div>
-        <div class="form-group">
-            <label for="phone">電話番号</label>
-            <input type="text" name="phone" id="phone">
-        </div>
-        <div class="button-group">
-            <a href="{{url('customers')}}" class="btn btn-cancel">戻る</a>
-            <button type="submit" class="btn btn-create">保存</button>
-        </div>
+	<div class="title-container">
+		<h2>顧客登録</h2>
+	</div>
+	<form action="{{url('customers')}}" method="post" class="form-container">
+		{% include 'parts/formError.twig' %}
+		<div class="form-group">
+			<label for="company_name">会社名</label>
+			<input type="text" name="company_name" id="company_name" value="{{ old.company_name }}" required>
+		</div>
+		<div class="form-group">
+			<label for="contact_name">担当者名</label>
+			<input type="text" name="contact_name" id="contact_name" value="{{ old.contact_name }}" required>
+		</div>
+		<div class="form-group">
+			<label for="email">メールアドレス</label>
+			<input type="email" name="email" id="email" value="{{ old.email }}" required>
+		</div>
+		<div class="form-group">
+			<label for="address">住所</label>
+			<input type="text" name="address" id="address" value="{{ old.address }}">
+		</div>
+		<div class="form-group">
+			<label for="phone">電話番号</label>
+			<input type="text" name="phone" id="phone" value="{{ old.phone }}">
+		</div>
+		<div class="button-group">
+			<a href="{{url('customers')}}" class="btn btn-cancel">戻る</a>
+			<button type="submit" class="btn btn-create">保存</button>
+		</div>
 
-    </form>
+	</form>
 {% endblock %}
