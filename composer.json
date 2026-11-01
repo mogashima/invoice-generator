@@ -29,7 +29,7 @@
         "mpdf/mpdf": "^8.2",
         "php-di/php-di": "^6.4",
         "respect/validation": "^2.4",
-        "robmorgan/phinx": "^0.16.10",
+        "robmorgan/phinx": "^0.16.12",
         "slim/psr7": "^1.5",
         "slim/slim": "^4.10",
         "slim/twig-view": "^3.4",
